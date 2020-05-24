@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 """
-sleepSpeak07.py
+sleepSpeak_07.py
 2019
 
 10/27　夜目が覚めた際に、揺らすと時間を教えてくれる。
-10/29　
+10/29　　　 電源オンとともにスタートするようにする
+        　 IPを固定にする。
         ◯ フリフリを続けるとシャットダウンするようにする。
         ◯ raspberrypt 1model A+でWifiドングルをつけて動くとよい
 11/05　　　6時と23時にしゃべる。
-11/13     macからラズパイのpiにあるsleep_start.shを叩くと、起動する。
+11/13     macからラズパイのpiにあるsleep_start.shを叩くと、起6:04動する。
 11/14  03 twitterにつぶやく
 11/17      バグ修正　0時に死んでいた
 11/20　　　カウントをやめてsleepで対応
@@ -21,7 +22,10 @@ sleepSpeak07.py
 2020/05/02
         07  朝のしゃべりを追加。天気、気温、休日
 2020/05/17  曜日を追加
-2020/05/24  土日に休日は喋らない、行数削減
+2020/05/24  土日は休日と喋らない
+
+コピースクリプト
+scp -r GPIO/sleepSpeak_07.py pi@192.168.68.112:/home/pi
 
 """
 
@@ -166,8 +170,8 @@ def main():
     said_time = ""
     twitter_cnt = 0
     speakPrint('スリープスピークを始めます。')
-    while True:
 
+    while True:
         # チルトスイッチをみて、状態が変わっていれば、現在時刻を喋る。
         if (GPIO.input(Tilt_Switch)):
             if Tilt_ == 'off':
@@ -185,15 +189,14 @@ def main():
         Tilt_timer += 1
         print(Tilt_timer,end='', flush=True)
 
-        # プログラムテスト用の時間設定
+        # テスト用時間設定
         test_H = 10
         test_M = 9
 
         dt_now = datetime.datetime.now()
-
         if yobi[dt_now.weekday()] in ["月","火","水","木","金"]:
         # if yobi[dt_now.weekday()] in ["月","火","水","木","金","土","日"]:
-
+        
             # 平日の朝　6時に時を告げる
             if dt_now.hour == 6 and dt_now.minute == 0:
             # if dt_now.hour == test_H and dt_now.minute == test_M:
@@ -201,6 +204,7 @@ def main():
                     dateSpeak()
                     youbiSpeak()
                     timeSpeak()
+                    time.sleep(55)
                     
             # 平日の朝　6時20分に もう一度時を告げる     
             if dt_now.hour == 6 and dt_now.minute == 20:
@@ -208,6 +212,7 @@ def main():
                     speakPrint('おはよう')
                     timeSpeak()
                     weatherSpeak()
+                    time.sleep(55)
 
             # 平日の朝　6時40分に もう一度時を告げる     
             if dt_now.hour == 6 and dt_now.minute == 40:
@@ -226,6 +231,7 @@ def main():
                         speakPrint('ちなみに今日は休日の様です。')
                     else:
                         speakPrint('そろそろ起きませんか?')
+                    time.sleep(55)
 
         # 土日の朝　7時00分に時を告げる     
         if dt_now.hour == 7 and dt_now.minute == 0:
@@ -247,6 +253,7 @@ def main():
                     pass
                 else:
                     speakPrint('土日なのに休日判定がおかしいです。')
+                time.sleep(55)
 
         # 毎朝　7時40分に 一度だけツイッターで昨夜の状況をつぶやく
         if dt_now.hour == 7 and dt_now.minute == 40:
@@ -282,20 +289,20 @@ def main():
         # 23時に時を告げる
         if dt_now.hour == 23 and dt_now.minute == 0:
             timeSpeak()
+            time.sleep(55)
 
         # 23時15分
         if dt_now.hour == 23 and dt_now.minute == 15:
             timeSpeak()
             speakPrint('そろそろ寝ませんか')
+            time.sleep(55)
 
         # 日替わり時にカウンターをリセット
         if dt_now.hour == 0 and dt_now.minute ==0:
             print(said_time)
             said_time = ""
+            time.sleep(55)
             twitter_cnt = 0
-        
-        # 同じことは喋らない為のディレイ
-        time.sleep(55)
         
 #define a destroy function for clean up everything after the script finished
 def destroy_shutdown():
