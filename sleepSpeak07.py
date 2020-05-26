@@ -24,8 +24,6 @@ sleepSpeak_07.py
 2020/05/17  曜日を追加
 2020/05/24  土日は休日と喋らない
 
-コピースクリプト
-scp -r GPIO/sleepSpeak_07.py pi@192.168.68.112:/home/pi
 
 """
 
